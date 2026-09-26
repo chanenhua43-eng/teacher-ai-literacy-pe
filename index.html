@@ -1,0 +1,791 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>教師 AI 素養調查與分析診斷系統</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Chart.js CDN for Radar Chart -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- FontAwesome Icons CDN -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts Inter & Noto Sans TC -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Noto+Sans+TC:wght@300;400;500;700&display=swap" rel="stylesheet">
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            50: '#f0f3ff',
+                            100: '#e0e7ff',
+                            500: '#6366f1',
+                            600: '#4f46e5',
+                            700: '#4338ca',
+                            800: '#3730a3',
+                            900: '#312e81',
+                        },
+                        accent: {
+                            teal: '#14b8a6',
+                            emerald: '#10b981',
+                            amber: '#f59e0b',
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'Noto Sans TC', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        @media print {
+            .no-print { display: none !important; }
+            .print-only { display: block !important; }
+            body { background: white !important; color: black !important; }
+            .shadow-xl, .shadow-md, .shadow-lg { box-shadow: none !important; }
+            .border { border-color: #e5e7eb !important; }
+        }
+        .gradient-bg {
+            background: linear-gradient(135deg, #4f46e5 0%, #3b82f6 50%, #14b8a6 100%);
+        }
+        .glass-card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+        }
+        /* Custom animations */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .animate-fade-in {
+            animation: fadeIn 0.4s ease-out forwards;
+        }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-800 font-sans min-h-screen flex flex-col justify-between selection:bg-brand-500 selection:text-white">
+
+    <!-- Header -->
+    <header class="bg-white border-b border-slate-200 sticky top-0 z-50 shadow-sm no-print">
+        <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+            <div class="flex items-center space-x-3">
+                <div class="w-10 h-10 rounded-xl gradient-bg flex items-center justify-center text-white shadow-md">
+                    <i class="fa-solid fa-brain text-xl"></i>
+                </div>
+                <div>
+                    <h1 class="font-bold text-slate-900 text-lg leading-tight">教師 AI 素養診斷系統</h1>
+                    <p class="text-xs text-slate-500 hidden sm:block">AI Competency Diagnostic Tool for Educators</p>
+                </div>
+            </div>
+            <div class="flex items-center space-x-2">
+                <span class="text-xs bg-brand-50 text-brand-700 font-medium px-2.5 py-1 rounded-full border border-brand-100 flex items-center gap-1.5">
+                    <span class="w-2 h-2 rounded-full bg-brand-500 animate-pulse"></span>
+                    情境式評量
+                </span>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Container -->
+    <main class="max-w-4xl mx-auto px-4 py-8 w-full flex-grow">
+
+        <!-- Start Screen -->
+        <div id="start-screen" class="bg-white rounded-2xl shadow-xl border border-slate-100 p-6 sm:p-10 animate-fade-in">
+            <div class="text-center max-w-2xl mx-auto space-y-6">
+                <div class="inline-flex p-4 bg-brand-50 text-brand-600 rounded-3xl mb-2">
+                    <i class="fa-solid fa-laptop-code text-4xl"></i>
+                </div>
+                <h2 class="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">
+                    歡迎進行「教師 AI 素養情境診斷」
+                </h2>
+                <p class="text-slate-600 leading-relaxed text-base sm:text-lg">
+                    本系統依據五大關鍵 AI 素養面向與三個發展階段設計。透過 5 個真實教學情境選擇，協助您精準掌握個人目前的 AI 素養分佈與專業成長建議。
+                </p>
+
+                <!-- Framework Overview Cards -->
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 text-left my-8">
+                    <div class="p-4 rounded-xl bg-slate-50 border border-slate-100 hover:border-brand-200 transition-colors">
+                        <div class="flex items-center space-x-2 text-brand-600 font-semibold mb-2">
+                            <i class="fa-solid fa-layer-group"></i>
+                            <span>五大核心面向</span>
+                        </div>
+                        <p class="text-xs text-slate-500 leading-normal">
+                            以人為本、AI倫理、AI基礎與應用、AI教學法、AI促進專業學習。
+                        </p>
+                    </div>
+                    <div class="p-4 rounded-xl bg-slate-50 border border-slate-100 hover:border-brand-200 transition-colors">
+                        <div class="flex items-center space-x-2 text-accent-teal font-semibold mb-2">
+                            <i class="fa-solid fa-chart-line"></i>
+                            <span>三階段發展層次</span>
+                        </div>
+                        <p class="text-xs text-slate-500 leading-normal">
+                            習得（Acquire）、深化（Deepen）、創造（Create）。
+                        </p>
+                    </div>
+                </div>
+
+                <div class="pt-2">
+                    <button id="start-btn" class="w-full sm:w-auto px-8 py-4 bg-brand-600 hover:bg-brand-700 text-white font-bold rounded-xl shadow-lg hover:shadow-xl transition-all transform hover:-translate-y-0.5 active:translate-y-0 flex items-center justify-center space-x-3 mx-auto text-lg">
+                        <span>開始情境測驗</span>
+                        <i class="fa-solid fa-arrow-right"></i>
+                    </button>
+                </div>
+                <p class="text-xs text-slate-400">完整填答約需 2-3 分鐘 • 匿名免註冊</p>
+            </div>
+        </div>
+
+        <!-- Quiz Section (Hidden initially) -->
+        <div id="quiz-screen" class="hidden space-y-6">
+            <!-- Progress Bar Card -->
+            <div class="bg-white rounded-xl p-4 border border-slate-200 shadow-sm no-print">
+                <div class="flex justify-between items-center text-sm font-medium text-slate-600 mb-2">
+                    <span id="question-tracker">題目 1 / 5</span>
+                    <span id="progress-percent" class="text-brand-600 font-bold">0%</span>
+                </div>
+                <div class="w-full bg-slate-100 rounded-full h-2.5 overflow-hidden">
+                    <div id="progress-bar" class="bg-brand-600 h-2.5 rounded-full transition-all duration-300" style="width: 20%"></div>
+                </div>
+            </div>
+
+            <!-- Question Card -->
+            <div id="question-card" class="bg-white rounded-2xl shadow-xl border border-slate-100 p-6 sm:p-8 animate-fade-in relative">
+                <!-- Aspect Tag -->
+                <div class="mb-4">
+                    <span id="aspect-badge" class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-brand-50 text-brand-700 border border-brand-200">
+                        <i id="aspect-icon" class="fa-solid fa-compass"></i>
+                        <span id="aspect-title">面向一：以人為本的思維</span>
+                    </span>
+                </div>
+
+                <!-- Scenario Story -->
+                <div class="mb-6">
+                    <h3 class="text-xs font-bold text-slate-400 tracking-wider uppercase mb-1">教學實務情境</h3>
+                    <p id="scenario-text" class="text-slate-800 text-base sm:text-lg font-medium leading-relaxed bg-slate-50 p-4 sm:p-5 rounded-xl border border-slate-100">
+                        情境載入中...
+                    </p>
+                </div>
+
+                <!-- Options Header -->
+                <p class="text-sm font-semibold text-slate-700 mb-3">請選擇最符合您目前實際作法或第一反應的選項：</p>
+
+                <!-- Options Container -->
+                <div id="options-container" class="space-y-3">
+                    <!-- Dynamic rendering of options -->
+                </div>
+
+                <!-- Navigation Controls -->
+                <div class="mt-8 pt-4 border-t border-slate-100 flex justify-between items-center">
+                    <button id="prev-btn" class="px-5 py-2.5 rounded-lg border border-slate-300 text-slate-600 hover:bg-slate-50 font-medium transition disabled:opacity-40 disabled:cursor-not-allowed flex items-center gap-2">
+                        <i class="fa-solid fa-chevron-left text-xs"></i> 上一題
+                    </button>
+                    <button id="next-btn" disabled class="px-6 py-2.5 rounded-lg bg-brand-600 hover:bg-brand-700 text-white font-semibold shadow transition disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2">
+                        <span>下一題</span> <i class="fa-solid fa-chevron-right text-xs"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Result Report Section (Hidden initially) -->
+        <div id="result-screen" class="hidden space-y-8 animate-fade-in">
+
+            <!-- Action Bar (Top) -->
+            <div class="flex flex-wrap items-center justify-between gap-4 bg-white p-4 rounded-xl border border-slate-200 shadow-sm no-print">
+                <div class="flex items-center gap-2 text-slate-700 font-semibold">
+                    <i class="fa-solid fa-square-poll-vertical text-brand-600 text-xl"></i>
+                    <span>診斷報告已生成</span>
+                </div>
+                <div class="flex flex-wrap items-center gap-2">
+                    <button onclick="copyResultText()" class="px-3.5 py-2 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 text-sm font-medium transition flex items-center gap-1.5">
+                        <i class="fa-regular fa-copy"></i> 一鍵複製結果
+                    </button>
+                    <button onclick="window.print()" class="px-3.5 py-2 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 text-sm font-medium transition flex items-center gap-1.5">
+                        <i class="fa-solid fa-print"></i> 列印 / 匯出 PDF
+                    </button>
+                    <button onclick="restartQuiz()" class="px-3.5 py-2 rounded-lg bg-brand-50 hover:bg-brand-100 text-brand-700 text-sm font-medium transition flex items-center gap-1.5">
+                        <i class="fa-solid fa-rotate-right"></i> 重新檢測
+                    </button>
+                </div>
+            </div>
+
+            <!-- Print Header (Only visible when printing) -->
+            <div class="hidden print-only mb-6 border-b pb-4">
+                <h1 class="text-2xl font-bold text-slate-900">教師 AI 素養個人分析與診斷報告</h1>
+                <p class="text-xs text-slate-500 mt-1">產出時間：<span id="print-date"></span></p>
+            </div>
+
+            <!-- Main Result Summary Card -->
+            <div class="bg-white rounded-2xl shadow-xl border border-slate-100 overflow-hidden">
+                <div class="p-6 sm:p-8 gradient-bg text-white">
+                    <div class="flex flex-col md:flex-row md:items-center justify-between gap-6">
+                        <div class="space-y-2">
+                            <span class="inline-block px-3 py-1 bg-white/20 backdrop-blur-md rounded-full text-xs font-semibold tracking-wide uppercase">
+                                Overall Assessment
+                            </span>
+                            <h2 id="overall-stage-title" class="text-3xl sm:text-4xl font-extrabold tracking-tight">
+                                診斷中...
+                            </h2>
+                            <p id="overall-score-subtitle" class="text-white/80 text-sm sm:text-base font-medium">
+                                總分：-- / 15 分
+                            </p>
+                        </div>
+                        <div class="bg-white/10 backdrop-blur-md border border-white/20 p-4 rounded-xl flex items-center justify-center min-w-[140px] text-center">
+                            <div>
+                                <div class="text-xs text-white/80 font-medium">整體發展層次</div>
+                                <div id="overall-badge" class="text-2xl font-black mt-1 text-amber-300">--</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="p-6 sm:p-8 space-y-6">
+                    <div>
+                        <h3 class="text-lg font-bold text-slate-900 mb-2 flex items-center gap-2">
+                            <i class="fa-solid fa-user-check text-brand-600"></i> 教師 AI 核心特質描述
+                        </h3>
+                        <p id="stage-description" class="text-slate-600 leading-relaxed bg-slate-50 p-4 rounded-xl border border-slate-100">
+                            加載中...
+                        </p>
+                    </div>
+
+                    <div>
+                        <h3 class="text-lg font-bold text-slate-900 mb-2 flex items-center gap-2">
+                            <i class="fa-solid fa-lightbulb text-amber-500"></i> 專屬專業成長建議
+                        </h3>
+                        <div id="stage-recommendations" class="bg-amber-50/60 border border-amber-200/60 text-slate-700 p-4 rounded-xl leading-relaxed">
+                            加載中...
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Visual Charts & Radar Grid -->
+            <div class="grid grid-cols-1 md:grid-cols-12 gap-8 items-start">
+                <!-- Radar Chart Card -->
+                <div class="md:col-span-6 bg-white p-6 rounded-2xl shadow-xl border border-slate-100 flex flex-col items-center">
+                    <h3 class="text-lg font-bold text-slate-900 mb-1 w-full text-left flex items-center gap-2">
+                        <i class="fa-solid fa-chart-pie text-brand-600"></i> 五大素養面向分布圖
+                    </h3>
+                    <p class="text-xs text-slate-400 w-full text-left mb-4">各面向得分範圍為 1 分（習得）至 3 分（創造）</p>
+                    
+                    <div class="relative w-full max-w-[320px] aspect-square flex items-center justify-center my-2">
+                        <canvas id="radarChart"></canvas>
+                    </div>
+                </div>
+
+                <!-- Five Dimensions Breakdown List -->
+                <div class="md:col-span-6 space-y-4">
+                    <h3 class="text-lg font-bold text-slate-900 mb-2 flex items-center gap-2">
+                        <i class="fa-solid fa-list-check text-brand-600"></i> 分項素養面向詳細診斷
+                    </h3>
+                    <div id="dimensions-detail-container" class="space-y-3">
+                        <!-- Dynamic Dimension Cards -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- Bottom Disclaimer/Footer for report -->
+            <div class="text-center text-xs text-slate-400 pt-4 border-t border-slate-200">
+                <p>教師 AI 素養發展架構參考：UNESCO AI Competency Framework for Teachers 與相關國內外研究指標。</p>
+            </div>
+        </div>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-white border-t border-slate-200 py-6 text-center text-xs text-slate-500 no-print mt-12">
+        <div class="max-w-5xl mx-auto px-4">
+            <p>© 2026 教師 AI 素養診斷系統 • 協助教師引領 AI 時代教學創新</p>
+        </div>
+    </footer>
+
+    <script>
+        // Data Structure for Questions and Diagnostic Info
+        const questionsData = [
+            {
+                id: 1,
+                aspectKey: "human",
+                aspectTitle: "面向一：以人為本的思維",
+                aspectSub: "Human-centred Mindset",
+                icon: "fa-person-chalkboard",
+                scenario: "學校鼓勵利用 AI 生成式工具（如 ChatGPT）輔助設計單元教學活動，面對這項變化，您的第一反應與實際作法通常是？",
+                options: [
+                    {
+                        score: 1,
+                        stage: "習得 (Acquire)",
+                        text: "嘗試按照指令讓 AI 產出教案，順利完成課堂教學活動作業以節省時間。",
+                        shortDesc: "能跟隨指令使用 AI 產出基礎備課內容"
+                    },
+                    {
+                        score: 2,
+                        stage: "深化 (Deepen)",
+                        text: "檢視 AI 產出的內容是否符合學生的學習起點與認知歷程，並手動修改不適合的教學環節。",
+                        shortDesc: "能進行批判審視，主動依學生認知調整內容"
+                    },
+                    {
+                        score: 3,
+                        stage: "創造 (Create)",
+                        text: "設計「師生與 AI 協同學習」的全新課堂模式，引導學生批判性思考 AI 提供的答案與侷限。",
+                        shortDesc: "建構師生協同創新教學法，引導高階思維"
+                    }
+                ]
+            },
+            {
+                id: 2,
+                aspectKey: "ethics",
+                aspectTitle: "面向二：AI 倫理",
+                aspectSub: "Ethics of AI",
+                icon: "fa-scale-balanced",
+                scenario: "學生在繳交個人作業時，您發現部分內容極可能是由 AI 完全代寫完成，此時您會如何處理？",
+                options: [
+                    {
+                        score: 1,
+                        stage: "習得 (Acquire)",
+                        text: "依據學校現有的學術誠信規範進行評分或扣分，提醒學生注意著作權與使用倫理。",
+                        shortDesc: "依循既定規範約束 AI 使用行為"
+                    },
+                    {
+                        score: 2,
+                        stage: "深化 (Deepen)",
+                        text: "與學生討論作業產出過程，指導他們如何正確引註 AI 資料來源，並區分「輔助學習」與「抄襲」的界線。",
+                        shortDesc: "融入誠信導引，指導正確引註與使用界線"
+                    },
+                    {
+                        score: 3,
+                        stage: "創造 (Create)",
+                        text: "重新設計多元歷程評量方式，並帶領領域教師制定出適用於課堂的「AI 倫理使用與規範指引」。",
+                        shortDesc: "重新設計評量機制，並能推動校本倫理指引"
+                    }
+                ]
+            },
+            {
+                id: 3,
+                aspectKey: "foundations",
+                aspectTitle: "面向三：AI 基礎與應用",
+                aspectSub: "AI Foundations and Applications",
+                icon: "fa-microchip",
+                scenario: "在日常教學或行政處理中，面對各類新出現的 AI 工具（例如：簡報生成、繪圖、語音轉文字），您通常如何應用？",
+                options: [
+                    {
+                        score: 1,
+                        stage: "習得 (Acquire)",
+                        text: "熟練使用 1～2 種常見工具來處理基礎工作（如：撰寫通知單草稿、生成簡單圖表）。",
+                        shortDesc: "掌握基礎工具，應用於日常行政與簡易作業"
+                    },
+                    {
+                        score: 2,
+                        stage: "深化 (Deepen)",
+                        text: "根據不同的教學需求（如：差異化教學、測驗題庫生成），靈活組合多種 AI 工具提高整體效率。",
+                        shortDesc: "彈性組合多元工具，滿足差異化教學需求"
+                    },
+                    {
+                        score: 3,
+                        stage: "創造 (Create)",
+                        text: "掌握 AI 運作的核心邏輯與限制，自主開發專屬 Prompt 提示詞庫或 AI 智能體（GPTs）並分享給同事。",
+                        shortDesc: "掌握底層邏輯，能自主設計 Prompt 庫或智能體"
+                    }
+                ]
+            },
+            {
+                id: 4,
+                aspectKey: "pedagogy",
+                aspectTitle: "面向四：AI 教學法",
+                aspectSub: "AI Pedagogy",
+                icon: "fa-graduation-cap",
+                scenario: "當您準備在課堂中引入 AI 工具來輔助學生進行專題探究或自主學習時，您會選擇哪種策略？",
+                options: [
+                    {
+                        score: 1,
+                        stage: "習得 (Acquire)",
+                        text: "在課堂上展示 AI 的使用示範，引導學生跟著固定步驟操作以獲取主題參考資料。",
+                        shortDesc: "示範基礎操作，引導學生按部就班檢索"
+                    },
+                    {
+                        score: 2,
+                        stage: "深化 (Deepen)",
+                        text: "依據學生的不同程度，提供適恰的 Prompt 引導範本，幫助學生利用 AI 進行自主探究與診斷。",
+                        shortDesc: "提供鷹架 Prompt，進行個體化自主診斷與探究"
+                    },
+                    {
+                        score: 3,
+                        stage: "創造 (Create)",
+                        text: "建構以 AI 為催化劑的創新探究教學模式，培養學生掌握提示詞工程（Prompt Engineering）與高階問題解決能力。",
+                        shortDesc: "建構 AI 催化式探究模式，培養提示詞工程能力"
+                    }
+                ]
+            },
+            {
+                id: 5,
+                aspectKey: "professional",
+                aspectTitle: "面向五：AI 促進專業學習",
+                aspectSub: "AI for Professional Learning",
+                icon: "fa-chalkboard-user",
+                scenario: "關於您個人的教師專業成長與社群互動，您目前如何利用 AI 資源或與夥伴交流？",
+                options: [
+                    {
+                        score: 1,
+                        stage: "習得 (Acquire)",
+                        text: "定期參加學校或外部舉辦的 AI 研習研討會，積極獲取最新工具資訊與操作技巧。",
+                        shortDesc: "參與基礎研習，被動吸取新工具資訊"
+                    },
+                    {
+                        score: 2,
+                        stage: "深化 (Deepen)",
+                        text: "將 AI 作為個人的「教學教練」，用它來進行教學反思、分析學生評量數據並調整教學策略。",
+                        shortDesc: "以 AI 為教學對話教練，進行數據分析與反思"
+                    },
+                    {
+                        score: 3,
+                        stage: "創造 (Create)",
+                        text: "在教師專業社群（PLC）中擔任領航者，公開發表 AI 創新教學案例，或帶領團隊共同開發 AI 教育資源。",
+                        shortDesc: "擔任社群領航者，開創並共享 AI 創新教案"
+                    }
+                ]
+            }
+        ];
+
+        // Overall Stage Info Definitions
+        const overallStagesData = {
+            acquire: {
+                title: "習得階段（AI 探索者 Acquire）",
+                badge: "探索者",
+                badgeClass: "text-amber-300",
+                description: "您目前處於 AI 素養的初創探索期，已展現對新技術的學習熱情，並開始嘗試將 1~2 種基礎 AI 工具應用於日常行政或教學準備中。對於 AI 的基本概念與倫理規範有初步認識，正逐步累積使用經驗與信心。",
+                recommendations: [
+                    "建議參與實作導向的 AI 工具入門工作坊，熟練提示詞（Prompt）基礎架構。",
+                    "嘗試從日常行政或備課草稿入手，漸進式降低備課負擔。",
+                    "參考優質的 AI 教案範例，觀摩其他教師如何將 AI 帶入課堂設計。"
+                ]
+            },
+            deepen: {
+                title: "深化階段（AI 實踐者 Deepen）",
+                badge: "實踐者",
+                badgeClass: "text-emerald-300",
+                description: "您具備優秀的 AI 實務應用能力，能將 AI 工具深度整合至學科教學與專業實務中。您不盲從 AI 產出，能根據學生的學習起點與個別差異調整應用策略，並重視 AI 倫理與適當的學習引註。",
+                recommendations: [
+                    "深化「提示詞工程（Prompt Engineering）」技能，設計差異化學習的互動提示詞。",
+                    "加入跨科或同科的 AI 教學社群（PLC），進行行動研究與教學反思對話。",
+                    "嘗試將 AI 工具融入多元評量與歷程檔案設計，提升課堂互動層次。"
+                ]
+            },
+            create: {
+                title: "創造階段（AI 領航者 Create）",
+                badge: "領航者",
+                badgeClass: "text-cyan-300",
+                description: "您是校園或專業領域中的 AI 教育領航者！不僅精通 AI 的底層邏輯與限制，更能設計出全新的「師生-AI 協同」創新教學模式。您主動構建校本 AI 倫理指引，並能帶領教師社群共同開發高品質的 AI 教育資源。",
+                recommendations: [
+                    "嘗試開發校本專屬的客製化 AI 智能體（GPTs / AI Agent），輔助全校教學。",
+                    "擔任 AI 種子教師或研習講師，公開分享創新課堂與行動研究成果。",
+                    "引導學生進階探討 AI 倫理、偏見與演算法風險，培養未來社會的高階公民素養。"
+                ]
+            }
+        };
+
+        // Application State Variables
+        let currentQuestionIndex = 0;
+        let userAnswers = {}; // { questionId: optionObject }
+        let chartInstance = null;
+
+        // DOM Elements
+        const startScreen = document.getElementById('start-screen');
+        const quizScreen = document.getElementById('quiz-screen');
+        const resultScreen = document.getElementById('result-screen');
+
+        const startBtn = document.getElementById('start-btn');
+        const prevBtn = document.getElementById('prev-btn');
+        const nextBtn = document.getElementById('next-btn');
+
+        const questionTracker = document.getElementById('question-tracker');
+        const progressPercent = document.getElementById('progress-percent');
+        const progressBar = document.getElementById('progress-bar');
+
+        const aspectTitle = document.getElementById('aspect-title');
+        const aspectIcon = document.getElementById('aspect-icon');
+        const scenarioText = document.getElementById('scenario-text');
+        const optionsContainer = document.getElementById('options-container');
+
+        // Initialize App
+        startBtn.addEventListener('click', () => {
+            startScreen.classList.add('hidden');
+            quizScreen.classList.remove('hidden');
+            currentQuestionIndex = 0;
+            renderQuestion(currentQuestionIndex);
+        });
+
+        prevBtn.addEventListener('click', () => {
+            if (currentQuestionIndex > 0) {
+                currentQuestionIndex--;
+                renderQuestion(currentQuestionIndex);
+            }
+        });
+
+        nextBtn.addEventListener('click', () => {
+            if (currentQuestionIndex < questionsData.length - 1) {
+                currentQuestionIndex++;
+                renderQuestion(currentQuestionIndex);
+            } else {
+                calculateAndShowResult();
+            }
+        });
+
+        // Render Question Function
+        function renderQuestion(index) {
+            const q = questionsData[index];
+            
+            // Progress Update
+            const total = questionsData.length;
+            const progressVal = Math.round(((index + 1) / total) * 100);
+            questionTracker.innerText = `題目 ${index + 1} / ${total}`;
+            progressPercent.innerText = `${progressVal}%`;
+            progressBar.style.width = `${progressVal}%`;
+
+            // Aspect & Scenario
+            aspectTitle.innerText = `${q.aspectTitle} (${q.aspectSub})`;
+            aspectIcon.className = `fa-solid ${q.icon}`;
+            scenarioText.innerText = q.scenario;
+
+            // Clear and Render Options
+            optionsContainer.innerHTML = '';
+            
+            const selectedOption = userAnswers[q.id];
+
+            q.options.forEach((opt, optIdx) => {
+                const isSelected = selectedOption && selectedOption.score === opt.score;
+                
+                const optionCard = document.createElement('div');
+                optionCard.className = `p-4 sm:p-5 rounded-xl border-2 transition-all cursor-pointer flex items-start space-x-3.5 ${
+                    isSelected 
+                        ? 'border-brand-600 bg-brand-50/70 shadow-md ring-2 ring-brand-500/20' 
+                        : 'border-slate-200 hover:border-brand-300 hover:bg-slate-50'
+                }`;
+
+                optionCard.onclick = () => selectOption(q.id, opt);
+
+                optionCard.innerHTML = `
+                    <div class="mt-0.5 flex-shrink-0">
+                        <div class="w-5 h-5 rounded-full border-2 flex items-center justify-center ${
+                            isSelected ? 'border-brand-600 bg-brand-600 text-white' : 'border-slate-300 bg-white'
+                        }">
+                            ${isSelected ? '<i class="fa-solid fa-check text-xs"></i>' : ''}
+                        </div>
+                    </div>
+                    <div class="flex-grow">
+                        <p class="text-sm sm:text-base font-medium ${isSelected ? 'text-brand-900' : 'text-slate-700'}">
+                            ${opt.text}
+                        </p>
+                    </div>
+                `;
+
+                optionsContainer.appendChild(optionCard);
+            });
+
+            // Button States
+            prevBtn.disabled = index === 0;
+            nextBtn.disabled = !userAnswers[q.id];
+
+            if (index === questionsData.length - 1) {
+                nextBtn.innerHTML = `<span>檢視診斷報告</span> <i class="fa-solid fa-square-poll-vertical text-xs"></i>`;
+            } else {
+                nextBtn.innerHTML = `<span>下一題</span> <i class="fa-solid fa-chevron-right text-xs"></i>`;
+            }
+        }
+
+        // Option Selection Handler
+        function selectOption(questionId, optionObj) {
+            userAnswers[questionId] = optionObj;
+            renderQuestion(currentQuestionIndex);
+        }
+
+        // Calculate and Render Results
+        function calculateAndShowResult() {
+            quizScreen.classList.add('hidden');
+            resultScreen.classList.remove('hidden');
+
+            // 1. Calculate Scores
+            let totalScore = 0;
+            const aspectScores = [];
+            const aspectLabels = [];
+
+            questionsData.forEach(q => {
+                const ans = userAnswers[q.id];
+                const score = ans ? ans.score : 1;
+                totalScore += score;
+                aspectScores.push(score);
+                aspectLabels.push(q.aspectTitle.split('：')[1]);
+            });
+
+            // Update Print Date
+            document.getElementById('print-date').innerText = new Date().toLocaleDateString('zh-TW', { year: 'numeric', month: 'long', day: 'numeric' });
+
+            // 2. Determine Stage
+            let stageKey = "acquire";
+            if (totalScore >= 13) {
+                stageKey = "create";
+            } else if (totalScore >= 9) {
+                stageKey = "deepen";
+            } else {
+                stageKey = "acquire";
+            }
+
+            const stageData = overallStagesData[stageKey];
+
+            // Update UI Summary Card
+            document.getElementById('overall-stage-title').innerText = stageData.title;
+            document.getElementById('overall-score-subtitle').innerText = `五大面向總得分：${totalScore} / 15 分`;
+            const badgeEl = document.getElementById('overall-badge');
+            badgeEl.innerText = stageData.badge;
+            badgeEl.className = `text-2xl font-black mt-1 ${stageData.badgeClass}`;
+
+            document.getElementById('stage-description').innerText = stageData.description;
+
+            const recContainer = document.getElementById('stage-recommendations');
+            recContainer.innerHTML = `
+                <ul class="space-y-2 text-sm sm:text-base">
+                    ${stageData.recommendations.map(r => `<li class="flex items-start gap-2"><i class="fa-solid fa-circle-check text-amber-500 mt-1 text-xs"></i><span>${r}</span></li>`).join('')}
+                </ul>
+            `;
+
+            // 3. Render Detailed Aspect Breakdown Cards
+            const detailContainer = document.getElementById('dimensions-detail-container');
+            detailContainer.innerHTML = '';
+
+            questionsData.forEach(q => {
+                const ans = userAnswers[q.id];
+                const score = ans ? ans.score : 1;
+                
+                let stageBadgeColor = "bg-amber-100 text-amber-800 border-amber-200";
+                if (score === 2) stageBadgeColor = "bg-emerald-100 text-emerald-800 border-emerald-200";
+                if (score === 3) stageBadgeColor = "bg-indigo-100 text-indigo-800 border-indigo-200";
+
+                const card = document.createElement('div');
+                card.className = "bg-white p-4 rounded-xl border border-slate-200 shadow-sm space-y-2";
+                card.innerHTML = `
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center space-x-2">
+                            <i class="fa-solid ${q.icon} text-brand-600"></i>
+                            <span class="font-bold text-slate-800 text-sm">${q.aspectTitle}</span>
+                        </div>
+                        <span class="text-xs font-semibold px-2.5 py-0.5 rounded-full border ${stageBadgeColor}">
+                            ${ans ? ans.stage : '未填'} (${score}分)
+                        </span>
+                    </div>
+                    <p class="text-xs text-slate-600 bg-slate-50 p-2.5 rounded-lg border border-slate-100">
+                        <span class="font-semibold text-slate-700">選擇表現：</span>${ans ? ans.shortDesc : ''}
+                    </p>
+                `;
+                detailContainer.appendChild(card);
+            });
+
+            // 4. Render Radar Chart
+            renderRadarChart(aspectLabels, aspectScores);
+        }
+
+        // Render Radar Chart using Chart.js
+        function renderRadarChart(labels, scores) {
+            const ctx = document.getElementById('radarChart').getContext('2d');
+
+            if (chartInstance) {
+                chartInstance.destroy();
+            }
+
+            chartInstance = new Chart(ctx, {
+                type: 'radar',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: '個人 AI 素養得分 (1-3分)',
+                        data: scores,
+                        backgroundColor: 'rgba(79, 70, 229, 0.2)',
+                        borderColor: '#4f46e5',
+                        borderWidth: 2.5,
+                        pointBackgroundColor: '#14b8a6',
+                        pointBorderColor: '#fff',
+                        pointHoverBackgroundColor: '#fff',
+                        pointHoverBorderColor: '#14b8a6',
+                        pointRadius: 4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: true,
+                    scales: {
+                        r: {
+                            min: 0,
+                            max: 3,
+                            ticks: {
+                                stepSize: 1,
+                                display: true,
+                                backdropColor: 'transparent',
+                                font: { size: 10 }
+                            },
+                            grid: {
+                                color: '#e2e8f0'
+                            },
+                            angleLines: {
+                                color: '#cbd5e1'
+                            },
+                            pointLabels: {
+                                font: {
+                                    size: 11,
+                                    weight: 'bold',
+                                    family: 'Noto Sans TC'
+                                },
+                                color: '#334155'
+                            }
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            display: false
+                        }
+                    }
+                }
+            });
+        }
+
+        // Copy Diagnostic Result Text
+        function copyResultText() {
+            let totalScore = 0;
+            let detailText = "";
+
+            questionsData.forEach(q => {
+                const ans = userAnswers[q.id];
+                const score = ans ? ans.score : 1;
+                totalScore += score;
+                detailText += `• ${q.aspectTitle}：${score}分 (${ans ? ans.stage : ''})\n`;
+            });
+
+            let stageTitle = "";
+            if (totalScore >= 13) stageTitle = "創造階段（AI 領航者）";
+            else if (totalScore >= 9) stageTitle = "深化階段（AI 實踐者）";
+            else stageTitle = "習得階段（AI 探索者）";
+
+            const summary = `【教師 AI 素養診斷報告】\n` +
+                `整體發展層次：${stageTitle}\n` +
+                `總得分：${totalScore} / 15 分\n\n` +
+                `各面向得分細節：\n${detailText}\n` +
+                `（來自：教師 AI 素養調查與分析診斷系統）`;
+
+            // Fallback execCommand for iframe compatibility
+            const dummy = document.createElement("textarea");
+            document.body.appendChild(dummy);
+            dummy.value = summary;
+            dummy.select();
+            document.execCommand("copy");
+            document.body.removeChild(dummy);
+
+            alert("診斷結果已成功複製到剪貼簿！");
+        }
+
+        // Restart Quiz
+        function restartQuiz() {
+            userAnswers = {};
+            currentQuestionIndex = 0;
+            resultScreen.classList.add('hidden');
+            startScreen.classList.remove('hidden');
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+    </script>
+</body>
+</html>
